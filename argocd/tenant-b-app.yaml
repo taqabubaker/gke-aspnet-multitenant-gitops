@@ -6,7 +6,7 @@ metadata:
 spec:
   project: default
   source:
-    repoURL: https://github.com/your-github-username/your-github-repo.git
+    repoURL: https://github.com/taqabubaker/gke-aspnet-multitenant-gitops.git
     targetRevision: HEAD
     path: chart
     helm:
