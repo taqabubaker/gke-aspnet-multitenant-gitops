@@ -131,5 +131,5 @@ resource "helm_release" "argocd" {
   namespace  = kubernetes_namespace_v1.argocd.metadata[0].name
   version    = "9.5.1"
 
-  depends_on = [kubernetes_namespace.argocd]
+  depends_on = [kubernetes_namespace_v1.argocd]
 }
