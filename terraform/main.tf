@@ -133,3 +133,22 @@ resource "helm_release" "argocd" {
 
   depends_on = [kubernetes_namespace_v1.argocd]
 }
+
+# Create the external-secrets namespace
+resource "kubernetes_namespace_v1" "external_secrets" {
+  metadata {
+    name = "external-secrets"
+  }
+  depends_on = [google_container_cluster.primary]
+}
+
+# Install External Secrets Operator via Helm
+resource "helm_release" "external_secrets" {
+  name       = "external-secrets"
+  repository = "https://charts.external-secrets.io"
+  chart      = "external-secrets"
+  namespace  = kubernetes_namespace_v1.external_secrets.metadata[0].name
+  version    = "0.9.11"
+
+  depends_on = [kubernetes_namespace_v1.external_secrets]
+}
