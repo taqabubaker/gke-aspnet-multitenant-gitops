@@ -37,5 +37,6 @@ steps:
 substitutions:
   _REGION: us-central1
   _REPO_NAME: my-app-repo
+  SHORT_SHA: latest
   _GITHUB_USER: your-github-username
   _GITHUB_REPO: your-github-repo
