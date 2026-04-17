@@ -1,12 +1,12 @@
 steps:
   # 1. Build the .NET 10 image
   - name: 'gcr.io/cloud-builders/docker'
-    args: ['build', '-t', '$_REGION-docker.pkg.dev/$PROJECT_ID/$_REPO_NAME/my-app:$SHORT_SHA', '.']
+    args: ['build', '-t', '$_REGION-docker.pkg.dev/$PROJECT_ID/$_REPO_NAME/my-app:$_TAG', '.']
     dir: 'app'
 
   # 2. Push the image to Artifact Registry
   - name: 'gcr.io/cloud-builders/docker'
-    args: ['push', '$_REGION-docker.pkg.dev/$PROJECT_ID/$_REPO_NAME/my-app:$SHORT_SHA']
+    args: ['push', '$_REGION-docker.pkg.dev/$PROJECT_ID/$_REPO_NAME/my-app:$_TAG']
 
   # 3. Update the Kustomize manifests and push to Git
   - name: 'gcr.io/cloud-builders/gcloud'
@@ -24,11 +24,11 @@ steps:
         
         # Update image repository and tag in values.yaml
         sed -i "s|repository: .*|repository: $_REGION-docker.pkg.dev/$PROJECT_ID/$_REPO_NAME/my-app|" chart/values.yaml
-        sed -i "s/tag: .*/tag: $SHORT_SHA/" chart/values.yaml
+        sed -i "s/tag: .*/tag: $_TAG/" chart/values.yaml
         
         # Commit changes
         git add chart/values.yaml
-        git commit -m "chore: update image tag to $SHORT_SHA [skip ci]"
+        git commit -m "chore: update image tag to $_TAG [skip ci]"
         
         # Push using the token for authentication
         # Replace the URL with your actual repository URL below
@@ -37,6 +37,6 @@ steps:
 substitutions:
   _REGION: us-central1
   _REPO_NAME: my-app-repo
-  SHORT_SHA: latest
+  _TAG: latest
   _GITHUB_USER: your-github-username
   _GITHUB_REPO: your-github-repo
