@@ -8,7 +8,7 @@ image:
   pullPolicy: IfNotPresent
 
 # GCP Project and Region
-projectId: "<PROJECT_ID>"
+projectId: "phrasal-method-417611"
 region: "<REGION>"
 
 # Application Configuration
