@@ -1,0 +1,39 @@
+steps:
+  # 1. Build the .NET 10 image
+  - name: 'gcr.io/cloud-builders/docker'
+    args: ['build', '-t', '$_REGION-docker.pkg.dev/$PROJECT_ID/$_REPO_NAME/my-app:$SHORT_SHA', '.']
+    dir: 'app'
+
+  # 2. Push the image to Artifact Registry
+  - name: 'gcr.io/cloud-builders/docker'
+    args: ['push', '$_REGION-docker.pkg.dev/$PROJECT_ID/$_REPO_NAME/my-app:$SHORT_SHA']
+
+  # 3. Update the Kustomize manifests and push to Git
+  - name: 'gcr.io/cloud-builders/gcloud'
+    entrypoint: 'bash'
+    args:
+      - '-c'
+      - |
+        # Configure Git
+        git config --global user.email "cloudbuild@google.com"
+        git config --global user.name "Cloud Build"
+        
+        # Fetch the token from Secret Manager
+        # Assumes a secret named "git-token" exists
+        TOKEN=$(gcloud secrets versions access latest --secret="git-token")
+        
+        # Update image repository and tag in values.yaml
+        sed -i "s|repository: .*|repository: $_REGION-docker.pkg.dev/$PROJECT_ID/$_REPO_NAME/my-app|" chart/values.yaml
+        sed -i "s/tag: .*/tag: $SHORT_SHA/" chart/values.yaml
+        
+        # Commit changes
+        git add chart/values.yaml
+        git commit -m "chore: update image tag to $SHORT_SHA [skip ci]"
+        
+        # Push using the token for authentication
+        # Replace the URL with your actual repository URL below
+        git push https://x-access-token:${TOKEN}@github.com/your-user/utto-gke-Kustomize-demo.git HEAD:main
+
+substitutions:
+  _REGION: us-central1
+  _REPO_NAME: my-app-repo

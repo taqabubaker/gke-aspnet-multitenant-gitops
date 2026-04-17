@@ -1,0 +1,209 @@
+@page
+@model MyApp.Pages.IndexModel
+@{
+    ViewData["Title"] = "GKE Demo - ASP.NET to Cloud SQL";
+}
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>@ViewData["Title"]</title>
+    <style>
+        :root {
+            --primary: #6366f1;
+            --bg-gradient: linear-gradient(135deg, #0f172a 0%, #1e1b4b 100%);
+            --card-bg: rgba(255, 255, 255, 0.05);
+            --card-border: rgba(255, 255, 255, 0.1);
+            --text-main: #f8fafc;
+            --text-muted: #94a3b8;
+            --accent: #10b981;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            background: var(--bg-gradient);
+            color: var(--text-main);
+            margin: 0;
+            padding: 2rem;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .container {
+            max-width: 1000px;
+            width: 100%;
+        }
+
+        header {
+            text-align: center;
+            margin-bottom: 3rem;
+        }
+
+        h1 {
+            font-size: 2.5rem;
+            font-weight: 800;
+            background: linear-gradient(to right, #818cf8, #c084fc);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 0.5rem;
+        }
+
+        p.subtitle {
+            color: var(--text-muted);
+            font-size: 1.1rem;
+        }
+
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 3rem;
+        }
+
+        .card {
+            background: var(--card-bg);
+            border: 1px solid var(--card-border);
+            border-radius: 12px;
+            padding: 1.5rem;
+            backdrop-filter: blur(10px);
+            transition: transform 0.2s, border-color 0.2s;
+        }
+
+        .card:hover {
+            transform: translateY(-5px);
+            border-color: rgba(255, 255, 255, 0.2);
+        }
+
+        .card-title {
+            color: var(--text-muted);
+            font-size: 0.85rem;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            margin-bottom: 0.5rem;
+        }
+
+        .card-value {
+            font-size: 1.2rem;
+            font-weight: 600;
+            word-break: break-all;
+        }
+
+        .card-value.accent {
+            color: var(--accent);
+        }
+
+        .table-container {
+            background: var(--card-bg);
+            border: 1px solid var(--card-border);
+            border-radius: 12px;
+            padding: 1.5rem;
+            backdrop-filter: blur(10px);
+            overflow-x: auto;
+        }
+
+        h2 {
+            font-size: 1.5rem;
+            margin-top: 0;
+            margin-bottom: 1.5rem;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            text-align: left;
+        }
+
+        th {
+            color: var(--text-muted);
+            font-weight: 500;
+            padding: 1rem;
+            border-bottom: 1px solid var(--card-border);
+        }
+
+        td {
+            padding: 1rem;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+        }
+
+        tr:hover td {
+            background: rgba(255, 255, 255, 0.02);
+        }
+
+        .amount {
+            font-family: monospace;
+            font-weight: 600;
+        }
+
+        .amount.positive {
+            color: var(--accent);
+        }
+
+        .amount.negative {
+            color: #ef4444;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>GKE & Cloud SQL Demo</h1>
+            <p class="subtitle">ASP.NET application connecting to MSSQL via Cloud SQL Auth Proxy</p>
+        </header>
+
+        <div class="grid">
+            <div class="card">
+                <div class="card-title">Pod Name</div>
+                <div class="card-value">@Model.PodName</div>
+            </div>
+            <div class="card">
+                <div class="card-title">Pod IP</div>
+                <div class="card-value">@Model.PodIp</div>
+            </div>
+            <div class="card">
+                <div class="card-title">Namespace</div>
+                <div class="card-value accent">@Model.PodNamespace</div>
+            </div>
+            <div class="card">
+                <div class="card-title">Database Connected</div>
+                <div class="card-value accent">@Model.DatabaseConnected</div>
+            </div>
+        </div>
+
+        <div class="table-container">
+            <h2>Recent Transactions</h2>
+            @if (Model.Transactions.Any())
+            {
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Date</th>
+                            <th>Description</th>
+                            <th>Amount</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var tx in Model.Transactions)
+                        {
+                            <tr>
+                                <td>@tx.Date.ToString("yyyy-MM-dd HH:mm")</td>
+                                <td>@tx.Description</td>
+                                <td class="amount @(tx.Amount >= 0 ? "positive" : "negative")">
+                                    @(tx.Amount >= 0 ? "+" : "")@tx.Amount.ToString("C")
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            }
+            else
+            {
+                <p style="color: var(--text-muted); text-align: center;">No transactions found.</p>
+            }
+        </div>
+    </div>
+</body>
+</html>

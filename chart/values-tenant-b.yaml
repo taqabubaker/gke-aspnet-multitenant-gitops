@@ -1,0 +1,12 @@
+# Values for Tenant B
+
+projectId: "<PROJECT_ID>"
+region: "<REGION>"
+
+appConfig:
+  dbInstance: "Tenant B DB"
+  dbInstanceName: "mssql-tenant-b"
+  secretKey: "tenant-b-db-password"
+
+serviceAccount:
+  gcpServiceAccount: "tenant-b-app-sa@<PROJECT_ID>.iam.gserviceaccount.com"

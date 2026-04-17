@@ -1,0 +1,9 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ include "gke-demo-app.fullname" . }}-config
+  labels:
+    {{- include "gke-demo-app.labels" . | nindent 4 }}
+data:
+  db_instance: {{ .Values.appConfig.dbInstance | quote }}
+  connection_name: "{{ .Values.projectId }}:{{ .Values.region }}:{{ .Values.appConfig.dbInstanceName }}"

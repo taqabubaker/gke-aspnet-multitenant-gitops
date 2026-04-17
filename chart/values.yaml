@@ -1,0 +1,29 @@
+# Default values for gke-demo-app.
+
+replicaCount: 2
+
+image:
+  repository: <REGION>-docker.pkg.dev/<PROJECT_ID>/my-app-repo/my-app
+  tag: latest
+  pullPolicy: IfNotPresent
+
+# GCP Project and Region
+projectId: "<PROJECT_ID>"
+region: "<REGION>"
+
+# Application Configuration
+appConfig:
+  dbInstance: "Default DB"
+  dbInstanceName: "mssql-default"
+  secretKey: "tenant-default-db-password"
+
+# Service Configuration
+service:
+  type: LoadBalancer
+  port: 80
+
+# Service Account Configuration
+serviceAccount:
+  create: true
+  name: ""
+  gcpServiceAccount: "" # To be filled in tenant values

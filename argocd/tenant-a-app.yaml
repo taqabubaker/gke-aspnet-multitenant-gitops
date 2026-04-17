@@ -1,0 +1,23 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: tenant-a-app
+  namespace: argocd # Assuming ArgoCD is installed in 'argocd' namespace
+spec:
+  project: default
+  source:
+    repoURL: https://github.com/your-user/utto-gke-Kustomize-demo.git # Replace with your repo
+    targetRevision: HEAD
+    path: chart
+    helm:
+      valueFiles:
+        - values-tenant-a.yaml
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: tenant-a
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+    syncOptions:
+    - CreateNamespace=true

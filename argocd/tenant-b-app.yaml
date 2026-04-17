@@ -1,0 +1,23 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: tenant-b-app
+  namespace: argocd
+spec:
+  project: default
+  source:
+    repoURL: https://github.com/your-user/utto-gke-Kustomize-demo.git # Replace with your repo
+    targetRevision: HEAD
+    path: chart
+    helm:
+      valueFiles:
+        - values-tenant-b.yaml
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: tenant-b
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+    syncOptions:
+    - CreateNamespace=true
