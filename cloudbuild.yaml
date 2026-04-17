@@ -32,8 +32,10 @@ steps:
         
         # Push using the token for authentication
         # Replace the URL with your actual repository URL below
-        git push https://x-access-token:${TOKEN}@github.com/your-user/utto-gke-Kustomize-demo.git HEAD:main
+        git push https://x-access-token:${TOKEN}@github.com/$_GITHUB_USER/$_GITHUB_REPO.git HEAD:main
 
 substitutions:
   _REGION: us-central1
   _REPO_NAME: my-app-repo
+  _GITHUB_USER: your-github-username
+  _GITHUB_REPO: your-github-repo
