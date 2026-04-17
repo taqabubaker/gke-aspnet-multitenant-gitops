@@ -3,8 +3,8 @@
 replicaCount: 2
 
 image:
-  repository: <REGION>-docker.pkg.dev/<PROJECT_ID>/my-app-repo/my-app
-  tag: latest
+  repository: europe-west4-docker.pkg.dev/phrasal-method-417611/my-app-repo/my-app
+  tag: v1.0
   pullPolicy: IfNotPresent
 
 # GCP Project and Region
