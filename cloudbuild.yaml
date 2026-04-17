@@ -14,13 +14,16 @@ steps:
     args:
       - '-c'
       - |
+        # Fetch the token from Secret Manager
+        TOKEN=$(gcloud secrets versions access latest --secret="git-token")
+        
+        # Clone the repository to get .git context
+        git clone https://x-access-token:$${TOKEN}@github.com/$_GITHUB_USER/$_GITHUB_REPO.git repo
+        cd repo
+        
         # Configure Git
         git config --global user.email "cloudbuild@google.com"
         git config --global user.name "Cloud Build"
-        
-        # Fetch the token from Secret Manager
-        # Assumes a secret named "git-token" exists
-        TOKEN=$(gcloud secrets versions access latest --secret="git-token")
         
         # Update image repository and tag in values.yaml
         sed -i "s|repository: .*|repository: $_REGION-docker.pkg.dev/$PROJECT_ID/$_REPO_NAME/my-app|" chart/values.yaml
@@ -30,9 +33,8 @@ steps:
         git add chart/values.yaml
         git commit -m "chore: update image tag to $_TAG [skip ci]"
         
-        # Push using the token for authentication
-        # Replace the URL with your actual repository URL below
-        git push https://x-access-token:$${TOKEN}@github.com/$_GITHUB_USER/$_GITHUB_REPO.git HEAD:main
+        # Push back
+        git push origin HEAD:main
 
 substitutions:
   _REGION: us-central1
