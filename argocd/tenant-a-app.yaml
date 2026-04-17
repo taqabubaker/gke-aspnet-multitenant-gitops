@@ -6,7 +6,7 @@ metadata:
 spec:
   project: default
   source:
-    repoURL: https://github.com/your-user/utto-gke-Kustomize-demo.git # Replace with your repo
+    repoURL: https://github.com/your-github-username/your-github-repo.git
     targetRevision: HEAD
     path: chart
     helm:

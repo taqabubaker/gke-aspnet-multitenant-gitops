@@ -29,9 +29,14 @@ steps:
         sed -i "s|repository: .*|repository: $_REGION-docker.pkg.dev/$PROJECT_ID/$_REPO_NAME/my-app|" chart/values.yaml
         sed -i "s/tag: .*/tag: $_TAG/" chart/values.yaml
         
+        # Update repoURL in ArgoCD manifests
+        REPO_URL="https://github.com/$_GITHUB_USER/$_GITHUB_REPO.git"
+        sed -i "s|repoURL: .*|repoURL: $$REPO_URL|" argocd/tenant-a-app.yaml
+        sed -i "s|repoURL: .*|repoURL: $$REPO_URL|" argocd/tenant-b-app.yaml
+        
         # Commit changes
-        git add chart/values.yaml
-        git commit -m "chore: update image tag to $_TAG [skip ci]"
+        git add .
+        git commit -m "chore: update image tag and repoURL to $_TAG [skip ci]"
         
         # Push back
         git push origin HEAD:main
