@@ -143,6 +143,11 @@ resource "kubernetes_namespace_v1" "external_secrets" {
 }
 
 # Install External Secrets Operator via Helm
+resource "google_service_account" "external_secrets_sa" {
+  account_id   = "external-secrets-sa"
+  display_name = "External Secrets Operator Service Account"
+}
+
 resource "helm_release" "external_secrets" {
   name       = "external-secrets"
   repository = "https://charts.external-secrets.io"
@@ -150,5 +155,37 @@ resource "helm_release" "external_secrets" {
   namespace  = kubernetes_namespace_v1.external_secrets.metadata[0].name
   version    = "0.9.11"
 
+  values = [
+    yamlencode({
+      serviceAccount = {
+        annotations = {
+          "iam.gke.io/gcp-service-account" = google_service_account.external_secrets_sa.email
+        }
+      }
+    })
+  ]
+
   depends_on = [kubernetes_namespace_v1.external_secrets]
+}
+
+# Bind KSA to GSA via Workload Identity
+resource "google_service_account_iam_member" "external_secrets_workload_identity" {
+  service_account_id = google_service_account.external_secrets_sa.name
+  role               = "roles/iam.workloadIdentityUser"
+  member             = "serviceAccount:${var.project_id}.svc.id.goog[external-secrets/external-secrets]"
+
+  depends_on = [helm_release.external_secrets]
+}
+
+# Grant access to secrets for External Secrets Operator
+resource "google_secret_manager_secret_iam_member" "eso_access_tenant_a" {
+  secret_id = google_secret_manager_secret.tenant_a_secret.id
+  role      = "roles/secretmanager.secretAccessor"
+  member    = "serviceAccount:${google_service_account.external_secrets_sa.email}"
+}
+
+resource "google_secret_manager_secret_iam_member" "eso_access_tenant_b" {
+  secret_id = google_secret_manager_secret.tenant_b_secret.id
+  role      = "roles/secretmanager.secretAccessor"
+  member    = "serviceAccount:${google_service_account.external_secrets_sa.email}"
 }
